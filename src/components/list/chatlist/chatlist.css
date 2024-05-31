@@ -1,6 +1,8 @@
 .chatlist {
     flex: 1;
     overflow: scroll;
+    overflow-x: hidden;
+    scrollbar-width: thin;
 }
 .chatlist .search {
     display: flex;

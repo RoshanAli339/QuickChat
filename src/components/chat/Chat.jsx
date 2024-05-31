@@ -7,7 +7,6 @@ const Chat = () => {
     const [text, setText] = useState('')
     const handleEmoji = (e) => {
         setText((prev) => prev + e.emoji)
-        setOpen(false)
     }
     const endRef = useRef()
 
