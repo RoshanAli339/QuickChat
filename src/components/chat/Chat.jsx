@@ -1,18 +1,59 @@
 import './chat.css'
 import { useState, useRef, useEffect } from 'react'
 import EmojiPicker from 'emoji-picker-react'
+import {
+    arrayUnion,
+    doc,
+    getDoc,
+    onSnapshot,
+    updateDoc,
+} from 'firebase/firestore'
+import { db } from '../../lib/firebase'
+import { useChatStore } from '../../lib/chatStore'
+import { useUserStore } from '../../lib/userStore'
+import upload from '../../lib/uploads.js'
+//import { format } from 'timeago.js'
 
 const Chat = () => {
     const [open, setOpen] = useState(false)
     const [text, setText] = useState('')
+    const [chat, setChat] = useState(null)
     const handleEmoji = (e) => {
         setText((prev) => prev + e.emoji)
     }
     const endRef = useRef()
+    const { currentUser } = useUserStore()
+    const { chatId } = useChatStore()
 
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [])
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'chats', chatId), (res) => {
+            setChat(res.data())
+        })
+        return () => {
+            unsub()
+        }
+    }, [chatId])
+
+    console.log(chat)
+    const handleSend = async () => {
+        if (text === '') return
+
+        try {
+            await updateDoc(doc(db, 'chats', chatId), {
+                messages: arrayUnion({
+                    senderId: currentUser.id,
+                    text,
+                    createdAt: new Date(),
+                }),
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div className="chat">
@@ -31,85 +72,15 @@ const Chat = () => {
                 </div>
             </div>
             <div className="center">
-                <div className="message">
-                    <img src="./avatar.png" alt="" />
-                    <div className="texts">
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing
-                            elit. Repudiandae impedit eaque culpa qui ad
-                            provident et earum inventore ab accusamus. Natus
-                            sunt nobis ex distinctio voluptatem deserunt eveniet
-                            cumque fuga!
-                        </p>
-                        <span>1 min ago</span>
+                {chat?.messages?.map((message) => (
+                    <div className="message own" key={message.createdAt}>
+                        <div className="texts">
+                            {message.img && <img src={message.img} alt="" />}
+                            <p>{message.text}</p>
+                            {/*<span>{message.createdAt}</span>*/}
+                        </div>
                     </div>
-                </div>
-                <div className="message own">
-                    <div className="texts">
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing
-                            elit. Repudiandae impedit eaque culpa qui ad
-                            provident et earum inventore ab accusamus. Natus
-                            sunt nobis ex distinctio voluptatem deserunt eveniet
-                            cumque fuga!
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="message">
-                    <img src="./avatar.png" alt="" />
-                    <div className="texts">
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing
-                            elit. Repudiandae impedit eaque culpa qui ad
-                            provident et earum inventore ab accusamus. Natus
-                            sunt nobis ex distinctio voluptatem deserunt eveniet
-                            cumque fuga!
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="message own">
-                    <div className="texts">
-                        <img
-                            src="https://images.pexels.com/photos/19155212/pexels-photo-19155212/free-photo-of-roof-on-a-yellow-building.jpeg"
-                            alt=""
-                        />
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing
-                            elit. Repudiandae impedit eaque culpa qui ad
-                            provident et earum inventore ab accusamus. Natus
-                            sunt nobis ex distinctio voluptatem deserunt eveniet
-                            cumque fuga!
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="message">
-                    <img src="./avatar.png" alt="" />
-                    <div className="texts">
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing
-                            elit. Repudiandae impedit eaque culpa qui ad
-                            provident et earum inventore ab accusamus. Natus
-                            sunt nobis ex distinctio voluptatem deserunt eveniet
-                            cumque fuga!
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="message own">
-                    <div className="texts">
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing
-                            elit. Repudiandae impedit eaque culpa qui ad
-                            provident et earum inventore ab accusamus. Natus
-                            sunt nobis ex distinctio voluptatem deserunt eveniet
-                            cumque fuga!
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
+                ))}
                 <div ref={endRef}></div>
             </div>
             <div className="bottom">
@@ -134,7 +105,9 @@ const Chat = () => {
                         <EmojiPicker open={open} onEmojiClick={handleEmoji} />
                     </div>
                 </div>
-                <button className="sendButton">Send</button>
+                <button className="sendButton" onClick={handleSend}>
+                    Send
+                </button>
             </div>
         </div>
     )

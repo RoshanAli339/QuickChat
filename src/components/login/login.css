@@ -59,6 +59,11 @@
     font-weight: 500;
 }
 
+.login .item form button:disabled {
+    cursor: not-allowed;
+    background-color: #1f8ff19c;
+}
+
 .login .separator {
     height: 80%;
     width: 2px;
