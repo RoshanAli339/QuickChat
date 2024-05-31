@@ -6,6 +6,7 @@ import {
     signInWithEmailAndPassword,
 } from 'firebase/auth'
 import { auth, db } from '../../lib/firebase'
+import upload from '../../lib/uploads.js'
 import { doc, setDoc } from 'firebase/firestore'
 
 const Login = () => {
@@ -13,6 +14,8 @@ const Login = () => {
         file: null,
         url: '',
     })
+
+    const [loading, setLoading] = useState(false)
 
     const handleAvatar = (e) => {
         if (e.target.files[0]) {
@@ -29,7 +32,9 @@ const Login = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault()
+        setLoading(true)
         const formData = new FormData(e.target)
+        const imgUrl = await upload(avatar.file)
 
         const { username, email, password } = Object.fromEntries(formData)
 
@@ -42,6 +47,7 @@ const Login = () => {
             await setDoc(doc(db, 'users', res.user.uid), {
                 username,
                 email,
+                avatar: imgUrl,
                 id: res.user.uid,
                 blocked: [],
             })
@@ -54,6 +60,8 @@ const Login = () => {
         } catch (err) {
             console.log(err)
             toast.error(err.message)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -92,7 +100,7 @@ const Login = () => {
                         name="password"
                         placeholder="Password"
                     />
-                    <button>Sign in</button>
+                    <button disabled={loading}>Sign in</button>
                 </form>
             </div>
         </div>
