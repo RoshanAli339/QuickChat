@@ -50,14 +50,6 @@ const AddUser = ({ chats, setAddMode }) => {
                 return c.user.id === user.id
             })
 
-            console.log('Chatlist of current user: ')
-            chats.forEach((chat) => {
-                console.log(chat.user)
-            })
-            console.log('Adding user: ', user.username, user.id)
-
-            console.log('User already in chat list: ', searchUser)
-
             if (searchUser) {
                 setAddMode((prev) => !prev)
                 return toast.warn('User already exists in chatlist!')
