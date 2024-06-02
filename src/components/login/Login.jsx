@@ -52,6 +52,9 @@ const Login = () => {
 
         const { username, email, password } = Object.fromEntries(formData)
 
+        if (!username || !email || !password)
+            return toast.warn('Please enter inputs!')
+
         try {
             const res = await createUserWithEmailAndPassword(
                 auth,
