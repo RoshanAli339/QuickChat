@@ -1,0 +1,75 @@
+.editUser {
+    padding: 30px;
+    background-color: rgba(17, 25, 40, 0.879);
+    border-radius: 10px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: max-content;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.editUser .editTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.editUser .editTitle img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.editUser .form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.editUser .form .changeItem {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.editUser .form .changeItem input {
+    padding: 10px;
+
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+.editUser .form .changeItem button {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.editUser .form .changeItem label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 15px;
+    text-decoration: underline;
+}
+
+.editUser .form .changeItem label img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+    opacity: 0.6;
+}

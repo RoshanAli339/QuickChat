@@ -1,4 +1,5 @@
 import './addUser.css'
+import { toast } from 'react-toastify'
 import { useState } from 'react'
 import {
     arrayUnion,
@@ -15,7 +16,7 @@ import {
 import { db } from '../../../../lib/firebase.js'
 import { useUserStore } from '../../../../lib/userStore.js'
 
-const AddUser = () => {
+const AddUser = ({ chats, setAddMode }) => {
     const [user, setUser] = useState(null)
 
     const { currentUser } = useUserStore()
@@ -45,6 +46,22 @@ const AddUser = () => {
         const userChatsRef = collection(db, 'userChats')
 
         try {
+            const searchUser = chats.find((c) => {
+                return c.user.id === user.id
+            })
+
+            console.log('Chatlist of current user: ')
+            chats.forEach((chat) => {
+                console.log(chat.user)
+            })
+            console.log('Adding user: ', user.username, user.id)
+
+            console.log('User already in chat list: ', searchUser)
+
+            if (searchUser) {
+                setAddMode((prev) => !prev)
+                return toast.warn('User already exists in chatlist!')
+            }
             const newChatRef = doc(chatRef)
 
             await setDoc(newChatRef, {
@@ -69,6 +86,7 @@ const AddUser = () => {
                     updatedAt: Date.now(),
                 }),
             })
+            setAddMode((prev) => !prev)
         } catch (error) {
             console.log(error)
         }

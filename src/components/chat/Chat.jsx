@@ -1,4 +1,5 @@
 import './chat.css'
+import { toast } from 'react-toastify'
 import { useState, useRef, useEffect } from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import {
@@ -12,7 +13,7 @@ import { db } from '../../lib/firebase'
 import { useChatStore } from '../../lib/chatStore'
 import { useUserStore } from '../../lib/userStore'
 import upload from '../../lib/uploads.js'
-//import { format } from 'timeago.js'
+import { format } from 'timeago.js'
 
 const Chat = () => {
     const [image, setImage] = useState({
@@ -26,16 +27,27 @@ const Chat = () => {
         setText((prev) => prev + e.emoji)
     }
     const endRef = useRef()
+    const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg']
     const { currentUser } = useUserStore()
-    const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } =
-        useChatStore()
+    const {
+        chatId,
+        user,
+        isCurrentUserBlocked,
+        isReceiverBlocked,
+        detailsToggle,
+    } = useChatStore()
 
     const handleImage = (e) => {
-        if (e.target.files[0]) {
+        if (
+            e.target.files[0] &&
+            allowedTypes.includes(e.target.files[0].type)
+        ) {
             setImage({
                 file: e.target.files[0],
                 url: URL.createObjectURL(e.target.files[0]),
             })
+        } else {
+            toast.error('Only png, jpg, and jpeg file formats are allowed')
         }
     }
 
@@ -52,12 +64,10 @@ const Chat = () => {
         }
     }, [chatId])
 
-    console.log(chat)
     const handleSend = async () => {
-        if (text === '') return
+        if (text === '' && image.url === '') return
 
         let imageUrl = null
-
         try {
             if (image.file) {
                 imageUrl = await upload(image.file)
@@ -65,8 +75,8 @@ const Chat = () => {
             await updateDoc(doc(db, 'chats', chatId), {
                 messages: arrayUnion({
                     senderId: currentUser.id,
-                    text,
                     createdAt: new Date(),
+                    ...(text && { text: text }),
                     ...(imageUrl && { img: imageUrl }),
                 }),
             })
@@ -85,6 +95,8 @@ const Chat = () => {
                     )
 
                     userChatsData.chats[chatIndex].lastMessage = text
+                        ? text
+                        : image.file.name
                     userChatsData.chats[chatIndex].isSeen =
                         id === currentUser.id ? true : false
                     userChatsData.chats[chatIndex].updatedAt = Date.now()
@@ -113,13 +125,17 @@ const Chat = () => {
                     <img src={user?.avatar || './avatar.png'} alt="" />
                     <div className="texts">
                         <span>{user?.username}</span>
-                        <p>Lorem ipsum dolor sit amet, qui minim labore</p>
+                        <p>{user?.caption}</p>
                     </div>
                 </div>
                 <div className="icons">
                     <img src="./phone.png" alt="" />
                     <img src="./video.png" alt="" />
-                    <img src="./info.png" alt="" />
+                    <img
+                        src="./info.png"
+                        alt=""
+                        onClick={() => detailsToggle()}
+                    />
                 </div>
             </div>
             <div className="center">
@@ -134,8 +150,8 @@ const Chat = () => {
                     >
                         <div className="texts">
                             {message.img && <img src={message.img} alt="" />}
-                            <p>{message.text}</p>
-                            {/*<span>{message.createdAt}</span>*/}
+                            {message.text && <p>{message.text}</p>}
+                            <span>{format(message.createdAt.toDate())}</span>
                         </div>
                     </div>
                 ))}

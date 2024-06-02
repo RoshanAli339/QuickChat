@@ -53,13 +53,13 @@
 .chat .top .icons img {
     width: 20px;
     height: 20px;
+    cursor: pointer;
 }
 
 .chat .center {
     padding: 20px;
     flex: 1;
-    overflow: scroll;
-    overflow-x: hidden;
+    overflow-y: auto;
     scrollbar-width: thin;
     display: flex;
     flex-direction: column;

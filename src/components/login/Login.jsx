@@ -17,13 +17,18 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false)
 
+    const acceptingTypes = ['image/png', 'image/jpg', 'image/jpeg']
+
     const handleAvatar = (e) => {
-        if (e.target.files[0]) {
+        if (
+            e.target.files[0] &&
+            acceptingTypes.includes(e.target.files[0].type)
+        ) {
             setAvatar({
                 file: e.target.files[0],
                 url: URL.createObjectURL(e.target.files[0]),
             })
-        }
+        } else toast.error('Only png, jpg, and jpeg file formats are allowed!')
     }
 
     const handleLogin = async (e) => {
@@ -33,6 +38,18 @@ const Login = () => {
         const formData = new FormData(e.target)
 
         const { email, password } = Object.fromEntries(formData)
+
+        if (!email || !password) {
+            setLoading(false)
+            toast.warn('Please enter both email and password')
+        } else if (
+            !email.match(
+                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            )
+        ) {
+            setLoading(false)
+            toast.warn('Please enter a valid email address!')
+        }
 
         try {
             await signInWithEmailAndPassword(auth, email, password)
@@ -50,10 +67,26 @@ const Login = () => {
         const formData = new FormData(e.target)
         const imgUrl = await upload(avatar.file)
 
-        const { username, email, password } = Object.fromEntries(formData)
+        const { username, email, password, confirmPassword } =
+            Object.fromEntries(formData)
 
-        if (!username || !email || !password)
+        if (!username || !email || !password || !confirmPassword || !imgUrl) {
+            setLoading(false)
             return toast.warn('Please enter inputs!')
+        } else if (
+            !email.match(
+                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            )
+        ) {
+            setLoading(false)
+            return toast.warn('Please enter a valid email address')
+        } else if (password !== confirmPassword) {
+            setLoading(false)
+
+            return toast.warn(
+                'Please make sure password and confirm password are same!'
+            )
+        }
 
         try {
             const res = await createUserWithEmailAndPassword(
@@ -67,6 +100,7 @@ const Login = () => {
                 avatar: imgUrl,
                 id: res.user.uid,
                 blocked: [],
+                caption: 'Hi there!',
             })
 
             await setDoc(doc(db, 'userChats', res.user.uid), {
@@ -114,11 +148,16 @@ const Login = () => {
                         onChange={handleAvatar}
                     />
                     <input type="text" name="username" placeholder="Username" />
-                    <input type="text" name="email" placeholder="Email" />
+                    <input type="email" name="email" placeholder="Email" />
                     <input
                         type="password"
                         name="password"
                         placeholder="Password"
+                    />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
                     />
                     <button disabled={loading}>
                         {loading ? 'Loading' : 'Sign Up'}

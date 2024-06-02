@@ -85,7 +85,6 @@ const Chatlist = () => {
                 />
             </div>
             {filteredChats.map((chat) => {
-                console.log(chat)
                 return (
                     <div
                         className="item"
@@ -115,7 +114,7 @@ const Chatlist = () => {
                     </div>
                 )
             })}
-            {addMode && <AddUser />}
+            {addMode && <AddUser chats={chats} setAddMode={setAddMode} />}
         </div>
     )
 }

@@ -10,7 +10,7 @@ body {
     background-image: url('/bg.jpg');
     display: flex;
     align-items: center;
-    /*    overflow: hidden; */
+    overflow: hidden;
     justify-content: center;
     height: 100vh;
     color: white;
