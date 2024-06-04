@@ -45,6 +45,11 @@ const AddUser = ({ chats, setAddMode }) => {
         const chatRef = collection(db, 'chats')
         const userChatsRef = collection(db, 'userChats')
 
+        if (user.id === currentUser.id) {
+            setAddMode((prev) => !prev)
+            return toast.warn('Cannot add yourself')
+        }
+
         try {
             const searchUser = chats.find((c) => {
                 return c.user.id === user.id

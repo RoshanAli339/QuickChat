@@ -34,6 +34,7 @@ const Chat = () => {
         user,
         isCurrentUserBlocked,
         isReceiverBlocked,
+        details,
         detailsToggle,
     } = useChatStore()
 
@@ -53,7 +54,9 @@ const Chat = () => {
 
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [])
+        // the chat object is mentioned as a dependency because we need to check for changes in that chats, only then
+        // do we need to scroll.
+    }, [chat])
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, 'chats', chatId), (res) => {
@@ -66,6 +69,7 @@ const Chat = () => {
 
     const handleSend = async () => {
         if (text === '' && image.url === '') return
+        console.log('Send called!')
 
         let imageUrl = null
         try {
@@ -155,15 +159,38 @@ const Chat = () => {
                         </div>
                     </div>
                 ))}
-                {image.url && (
-                    <div className="message own">
-                        <div className="texts">
-                            <img src={image.url} alt="" />
-                        </div>
-                    </div>
-                )}
                 <div ref={endRef}></div>
             </div>
+            {image.url && (
+                <div
+                    className="imageToSend"
+                    style={{
+                        width: details ? '475px' : '730px',
+                        right: details ? '535px' : '152px',
+                    }}
+                >
+                    <img
+                        src="./close.svg"
+                        alt=""
+                        className="closeMark"
+                        onClick={() =>
+                            setImage({
+                                file: null,
+                                url: '',
+                            })
+                        }
+                    />
+                    <div className="texts">
+                        <img
+                            src={image.url}
+                            style={{
+                                width: details ? '465px' : '720px',
+                            }}
+                            alt=""
+                        />
+                    </div>
+                </div>
+            )}
             <div className="bottom">
                 <div className="icons">
                     <label htmlFor="file">
@@ -179,34 +206,51 @@ const Chat = () => {
                     <img src="./camera.png" alt="" />
                     <img src="./mic.png" alt="" />
                 </div>
-                <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder={
-                        isCurrentUserBlocked || isReceiverBlocked
-                            ? 'You cannot send a message'
-                            : 'Type a message..'
-                    }
-                    disabled={isCurrentUserBlocked || isReceiverBlocked}
-                />
-                <div className="emoji">
-                    <img
-                        src="./emoji.png"
-                        alt=""
-                        onClick={() => setOpen((prev) => !prev)}
-                    />
-                    <div className="picker">
-                        <EmojiPicker open={open} onEmojiClick={handleEmoji} />
-                    </div>
-                </div>
-                <button
-                    className="sendButton"
-                    onClick={handleSend}
-                    disabled={isCurrentUserBlocked || isReceiverBlocked}
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        handleSend()
+
+                        setImage({
+                            file: null,
+                            url: '',
+                        })
+
+                        setText('')
+                    }}
                 >
-                    Send
-                </button>
+                    <input
+                        className={image.url ? 'imageTextBox' : 'textBox'}
+                        type="text"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder={
+                            isCurrentUserBlocked || isReceiverBlocked
+                                ? 'You cannot send a message'
+                                : 'Type a message..'
+                        }
+                        disabled={isCurrentUserBlocked || isReceiverBlocked}
+                    />
+                    <div className="emoji">
+                        <img
+                            src="./emoji.png"
+                            alt=""
+                            onClick={() => setOpen((prev) => !prev)}
+                        />
+                        <div className="picker">
+                            <EmojiPicker
+                                open={open}
+                                onEmojiClick={handleEmoji}
+                            />
+                        </div>
+                    </div>
+                    <input
+                        type="submit"
+                        className="sendButton"
+                        disabled={isCurrentUserBlocked || isReceiverBlocked}
+                        value="Send"
+                    />
+                </form>
             </div>
         </div>
     )

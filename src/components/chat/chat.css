@@ -111,11 +111,40 @@
     background-color: #5193fe;
 }
 
+.chat .imageToSend {
+    position: absolute;
+    height: 230px;
+    border: 3px solid #dddddd50;
+    border-bottom: none;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: rgba(17, 25, 40, 0.5);
+    bottom: 81px;
+}
+
+.chat .imageToSend .closeMark {
+    width: 20px;
+    height: 20px;
+    background-color: rgba(17, 25, 40);
+    border-radius: 50%;
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    cursor: pointer;
+}
+
+.chat .imageToSend .texts img {
+    height: 200px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 10px;
+    object-fit: cover;
+}
+
 .chat .bottom {
     padding: 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     border-top: 1px solid #dddddd35;
     gap: 20px;
     margin-top: auto;
@@ -132,7 +161,15 @@
     cursor: pointer;
 }
 
-.chat .bottom input {
+.chat .bottom form {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.chat .bottom form .textBox {
     flex: 1;
     background-color: rgba(17, 25, 40, 0.5);
     padding: 20px;
@@ -143,11 +180,24 @@
     font-size: 16px;
 }
 
-.chat .bottom input:disabled {
+.chat .bottom form .imageTextBox {
+    flex: 1;
+    background-color: rgba(17, 25, 40, 0.5);
+    border: 3px solid #dddddd50;
+    border-top: none;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 20px;
+    outline: none;
+    color: white;
+    font-size: 16px;
+}
+
+.chat .bottom form input:disabled {
     cursor: not-allowed;
 }
 
-.chat .bottom .sendButton {
+.chat .bottom form .sendButton {
     background-color: #5183fe;
     color: white;
     padding: 10px 20px;
@@ -156,17 +206,17 @@
     cursor: pointer;
 }
 
-.chat .bottom .emoji {
+.chat .bottom form .emoji {
     position: relative;
 }
 
-.chat .bottom .emoji .picker {
+.chat .bottom form .emoji .picker {
     position: absolute;
     bottom: 50px;
-    left: 0;
+    right: 10px;
 }
 
-.chat .bottom .sendButton:disabled {
+.chat .bottom form .sendButton:disabled {
     background-color: #5182feb4;
     cursor: not-allowed;
 }

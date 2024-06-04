@@ -61,6 +61,11 @@ const EditUser = ({ setEditMode }) => {
             toast.error('Error updating avatar')
             console.log(error)
         }
+
+        setAvatar({
+            file: null,
+            url: '',
+        })
     }
 
     const handleUpdateUsername = async () => {
@@ -75,6 +80,8 @@ const EditUser = ({ setEditMode }) => {
         } catch (error) {
             console.log(error)
         }
+
+        setUsername('')
     }
 
     const handleUpdateEmail = async () => {
@@ -97,6 +104,8 @@ const EditUser = ({ setEditMode }) => {
         } catch (error) {
             console.log(error)
         }
+
+        setEmail('')
     }
 
     const handleUpdateCaption = async () => {
@@ -110,6 +119,8 @@ const EditUser = ({ setEditMode }) => {
         } catch (error) {
             console.log(error)
         }
+
+        setCaption('')
     }
 
     const handleUpdatePassword = async () => {
@@ -131,6 +142,9 @@ const EditUser = ({ setEditMode }) => {
         } catch (error) {
             console.log(error)
         }
+
+        setPassword('')
+        setConfirmPassword('')
     }
 
     return (
