@@ -4,7 +4,11 @@ import { toast } from 'react-toastify'
 import { doc, updateDoc } from 'firebase/firestore'
 import { ref, deleteObject } from 'firebase/storage'
 import { auth, db, storage } from '../../../../lib/firebase.js'
-import { updateEmail, updatePassword } from 'firebase/auth'
+import {
+    updateEmail,
+    updatePassword,
+    verifyBeforeUpdateEmail,
+} from 'firebase/auth'
 import { useUserStore } from '../../../../lib/userStore.js'
 import { useChatStore } from '../../../../lib/chatStore.js'
 import upload from '../../../../lib/uploads.js'
@@ -91,6 +95,7 @@ const EditUser = ({ setEditMode }) => {
             )
 
         try {
+            await verifyBeforeUpdateEmail(auth.currentUser, email)
             await updateEmail(auth.currentUser, email)
             await updateDoc(doc(db, 'users', currentUser.id), {
                 email: email,
