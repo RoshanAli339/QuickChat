@@ -10,6 +10,13 @@ import { useUserStore } from './lib/userStore.js'
 import { useChatStore } from './lib/chatStore.js'
 
 const App = () => {
+    /**
+     * This is the main component that renders all other components
+     * The details of the currentUser logged in is fetched from the UserStore state management store.
+     * The details of the chat currently selected are fetched from the ChatStore state management store.
+     * 
+     * If not logged in the Login component will be loaded
+     */
     const { currentUser, isLoading, fetchUserInfo } = useUserStore()
     const { chatId, details } = useChatStore()
 
